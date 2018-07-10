@@ -1,0 +1,38 @@
+1.代码生成：
+参数示例：
+{
+    "adders":"F:/Git/energy_cloud",
+    "author":"kongweiteng",
+    "secret":"066131f0a7834afea8b211046af67749",
+    "table":"cus_contact"
+}
+
+adders：代码在本地的路径
+author：开发人员名称
+secret：秘钥   066131f0a7834afea8b211046af67749
+table：表名
+
+注：目前代码生产存在一个问题，生成出的实体目前还在本工程的entity包下，建议手动拷贝到vo工程下相应的包下
+
+
+
+2.端口设置
+energy-provider-system 8080
+energy-provider-business 8081
+energy-zuul-gateway 9001
+energy-consumer-app 8082
+energy-consumer-web 8083
+
+
+3.mybatis plus和mybatis是完美兼容的，需要一次性跨表查询的可以xml中写sql
+      不习惯使用 mybatis plus的可以使用mybatis，建议使用xml方式，不建议再集成其他通用mapper插件，谢谢
+
+4.异常处理：
+    底层服务都有统一异常处理，然后返回json数据。
+    建议不重要的地方可以不捕获异常；重要的需要捕获异常的时候，捕获到再抛出自定义异常。
+
+
+5.接口文档：
+  单项目接口文档：服务ip+端口/doc.html
+  整体服务接口文档：zuul服务ip+端口/doc.html
+

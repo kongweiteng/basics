@@ -1,0 +1,9 @@
+spring:
+  profiles:
+    active: debug
+logging:
+  config: classpath:logback-energy.xml
+
+mybatis-plus:
+      mapper-locations: classpath:/mybatis/mapper/*Mapper.xml
+      #config-location: classpath:/mybatis/mybatis-config.xml

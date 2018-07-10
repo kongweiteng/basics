@@ -1,0 +1,75 @@
+server:
+  port: 8083
+
+
+eureka:
+  client:
+#    register-with-eureka: false
+    service-url:
+      defaultZone: http://eureka-server-fnw-dev.topaas.enncloud.cn/eureka
+    instance:
+          lease-renewal-interval-in-seconds: 2 # 设置心跳的时间间隔（默认是30秒）
+          lease-expiration-duration-in-seconds: 5 # 如果现在超过了5秒的间隔（默认是90秒）
+          instance-id: ${spring.cloud.client.ipAddress}:${server.port}  # 在信息列表时显示主机名称
+          prefer-ip-address: true     # 访问的路径变为IP地址
+
+auth:
+  appid: 1
+  appsecret: 123456
+  uac_url: http://uac-fnw-test.topaas.enncloud.cn
+
+ribbon:
+  ConnectTimeout: 1000000
+  ReadTimeout: 600000
+hystrix:
+  command:
+    default:
+      execution:
+        timeout:
+          enabled: true
+        isolation:
+          thread:
+            timeoutInMilliseconds: 600000
+
+swagger:
+  show: true
+
+security:
+  user:
+    name: admin
+    password: admin
+  basic:
+    path: /v2/api-docs,/monitoring
+
+company:
+  electric:
+    count:
+      day: 24
+      month: 3
+      year: 24
+  steam:
+    count:
+      day: 31
+      month: 12
+      year: 1
+
+#文件存储地址
+file:
+  domain: http://10.39.30.19/
+  proplan: /group1/M00/00/28/CiceE1sDyZuAQ5cfAAArqTbCuXA76.xls
+spring:
+  redis:
+    host:  10.39.30.243
+    port: 6379
+    database: 0
+    password: FNadmin1234
+    timeout: 4000
+    pool:
+      max-active: 300
+      min-idle: 10
+      max-idle: 100
+      max-wait: -1
+      test-on-create: false
+      test-on-borrow: true
+      test-on-return: false
+      test-while-idle: true

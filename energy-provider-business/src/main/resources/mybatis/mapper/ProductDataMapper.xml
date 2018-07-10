@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.enn.energy.business.dao.ProductDataMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="RespResultMap" type="com.enn.vo.energy.business.resp.ProductDataResp">
+        <id column="id" property="id"/>
+        <result column="start_date" property="startDate"/>
+        <result column="end_date" property="endDate"/>
+        <result column="workshop_id" property="workshopId"/>
+        <result column="workshopName" property="workshopName"/>
+        <result column="line_id" property="lineId"/>
+        <result column="lineName" property="lineName"/>
+        <result column="team_id" property="teamId"/>
+        <result column="teamName" property="teamName"/>
+        <result column="monitor" property="monitor"/>
+        <result column="product_id" property="productId"/>
+        <result column="productName" property="productName"/>
+        <result column="specification" property="specification"/>
+        <result column="number" property="number"/>
+    </resultMap>
+    <resultMap id="ProductDataResp" type="com.enn.vo.energy.business.po.ProductDataPo">
+        <id column="id" property="id"/>
+        <result column="start_date" property="startDate"/>
+        <result column="end_date" property="endDate"/>
+        <result column="workshop_id" property="workshopId"/>
+        <result column="line_id" property="lineId"/>
+        <result column="team_id" property="teamId"/>
+        <result column="product_id" property="productId"/>
+        <result column="number" property="number"/>
+        <result column="del_flag" property="delFlag"/>
+    </resultMap>
+    <select id="getList" resultMap="RespResultMap">
+        SELECT
+        d.id,
+        d.start_date,
+        d.end_date,
+        d.workshop_id,
+        w.`name` AS workshopName,
+        d.line_id,
+        l.`name` AS lineName,
+        d.team_id,
+        t.`name` AS teamName,
+        t.monitor,
+        d.product_id,
+        p.`name` AS productName,
+        p.specification,
+        d.number
+        FROM product_data d
+        LEFT JOIN accounting_unit w ON d.workshop_id = w.id
+        LEFT JOIN accounting_unit l ON d.line_id = l.id
+        LEFT JOIN team_info t ON d.team_id = t.id
+        LEFT JOIN product_info p ON d.product_id = p.id
+        WHERE 1 = 1 AND d.del_flag = 0
+        <if test="null != custId and '' != custId">
+            AND d.cust_id = #{custId}
+        </if>
+        <if test="null != startDate and '' != startDate">
+            AND start_date &lt;= #{startDate}
+        </if>
+        <if test="null != endDate and '' != endDate ">
+            AND end_date >= #{endDate}
+        </if>
+        <if test="null != workshopId">
+        	AND workshop_id =#{workshopId}
+        </if>
+    </select>
+    
+    
+        <select id="getListForProductDataStatistics" resultMap="RespResultMap" parameterType="com.enn.vo.energy.business.condition.ProductDataConditon">
+        SELECT
+        d.id,
+        d.start_date,
+        d.end_date,
+        d.workshop_id,
+        w.`name` AS workshopName,
+        d.line_id,
+        l.`name` AS lineName,
+        d.team_id,
+        t.`name` AS teamName,
+        t.monitor,
+        d.product_id,
+        p.`name` AS productName,
+        p.specification,
+        d.number
+        FROM product_data d
+        LEFT JOIN accounting_unit w ON d.workshop_id = w.id
+        LEFT JOIN accounting_unit l ON d.line_id = l.id
+        LEFT JOIN team_info t ON d.team_id = t.id
+        LEFT JOIN product_info p ON d.product_id = p.id
+        WHERE 1 = 1 AND d.del_flag = 0
+        <if test="null != custId and '' != custId">
+            AND d.cust_id = #{custId}
+        </if>
+        <if test="null != startDate and '' != startDate">
+            AND date_format(start_date,#{formatHour}) >= #{startDate}
+        </if>
+        <if test="null != endDate and '' != endDate ">
+            AND date_format(end_date,#{formatHour}) &lt;= #{endDate}
+        </if>
+        <if test="null != workshopId">
+        	AND workshop_id =#{workshopId}
+        </if>
+        <!-- limit #{pageStart},#{pageCustomSize} -->  
+    </select>
+    
+    
+    <select id="totalForProductDataStatistics"  resultType="Integer"  parameterType="com.enn.vo.energy.business.condition.ProductDataConditon">
+        SELECT
+        count(1)
+        FROM product_data d
+        LEFT JOIN accounting_unit w ON d.workshop_id = w.id
+        LEFT JOIN accounting_unit l ON d.line_id = l.id
+        LEFT JOIN team_info t ON d.team_id = t.id
+        LEFT JOIN product_info p ON d.product_id = p.id
+        WHERE 1 = 1 AND d.del_flag = 0
+        <if test="null != custId and '' != custId">
+            AND d.cust_id = #{custId}
+        </if>
+        <if test="null != startDate and '' != startDate">
+            AND date_format(start_date,#{formatHour}) >= #{startDate}
+        </if>
+        <if test="null != endDate and '' != endDate ">
+            AND date_format(end_date,#{formatHour}) &lt;= #{endDate}
+        </if>
+        <if test="null != workshopId">
+        	AND workshop_id =#{workshopId}
+        </if>
+    </select>
+
+    <select id="getRespById" resultMap="RespResultMap">
+        SELECT
+        d.id,
+        d.start_date,
+        d.end_date,
+        d.workshop_id,
+        w.`name` AS workshopName,
+        d.line_id,
+        l.`name` AS lineName,
+        d.team_id,
+        t.`name` AS teamName,
+        t.monitor,
+        d.product_id,
+        p.`name` AS productName,
+        d.number
+        FROM product_data d
+        LEFT JOIN accounting_unit w ON d.workshop_id = w.id
+        LEFT JOIN accounting_unit l ON d.line_id = l.id
+        LEFT JOIN team_info t ON d.team_id = t.id
+        LEFT JOIN product_info p ON d.product_id = p.id
+        WHERE 1 = 1
+        <if test="null != id">
+            AND d.id = #{id}
+        </if>
+    </select>
+    <select id="findLineByProductId" resultMap="ProductDataResp">
+        SELECT
+        p.id,
+        p.start_date,
+        p.end_date,
+        p.line_id,
+        p.number,
+        p.product_id,
+        p.team_id,
+        p.workshop_id,
+        p.del_flag
+        FROM
+        product_data p
+        WHERE
+        p.product_id = #{id}
+        AND
+        p.start_date>=#{startTime}
+        AND
+        p.end_date&lt;=#{endTime}
+        AND
+        p.del_flag='0'
+    </select>
+</mapper>

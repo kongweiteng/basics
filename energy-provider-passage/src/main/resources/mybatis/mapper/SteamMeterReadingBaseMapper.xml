@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.enn.energy.passage.dao.SteamMeterReadingBaseMapper">
+
+    <!-- 查询本年度表起始值 -->
+    <select id="baseVol" resultType="com.enn.vo.energy.passage.vo.SteamMeterReadingBase">
+        SELECT
+            t1.id,
+            t1.base_quantity AS baseQuantity,
+            t1.meter_no AS meterNo,
+            t1.metric AS metric,
+            t1.read_time AS readTime,
+            t1.create_time AS createTime
+        FROM
+            steam_meter_reading_base t1
+        WHERE
+            t1.meter_no = #{meterNo}
+            AND t1.read_time = #{year}
+            AND t1.metric = 'EMS.FsIntLP'
+    </select>
+
+</mapper>

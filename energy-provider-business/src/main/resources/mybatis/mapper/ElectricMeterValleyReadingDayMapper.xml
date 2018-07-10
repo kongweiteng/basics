@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.enn.energy.business.dao.ElectricMeterValleyReadingDayMapper">
+
+    <select id="getSum" resultType="com.enn.vo.energy.business.resp.ElectricMeterReadingResp">
+        SELECT
+        COALESCE(SUM(use_quantity),0) AS valleyQuantity,
+        COALESCE(SUM(fees),0) AS valleyFees
+        FROM electric_meter_valley_reading_day
+        WHERE 1 = 1
+        AND read_time >= #{startTime}
+        AND read_time &lt;= #{endTime}
+        AND meter_no IN
+        <foreach collection="meterNoList" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="getMeterValleyDay" resultType="com.enn.vo.energy.business.po.DataResp">
+        SELECT
+        read_time as dateTime,
+        round(use_quantity,2) as dateValue
+        FROM electric_meter_valley_reading_day
+        WHERE read_time >= #{startTime}
+        AND read_time &lt;= #{endTime}
+        AND meter_no IN
+        <foreach collection="meterNoList" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        ORDER BY read_time ASC
+
+    </select>
+
+    <select id="getMeterSumValleyDay" resultType="com.enn.vo.energy.business.po.DataResp">
+        SELECT
+        LEFT(read_time,7) AS dateTime,
+        round(SUM(use_quantity),2) as dateValue
+        FROM electric_meter_valley_reading_day
+        WHERE read_time >= #{startTime}
+        AND read_time &lt;= #{endTime}
+        AND meter_no IN
+        <foreach collection="meterNoList" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+</mapper>

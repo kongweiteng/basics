@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.enn.energy.system.dao.ProductInfoMapper">
+
+    <!-- 根据id查询字典数据 -->
+    <select id="selectAll" resultType="com.enn.vo.energy.system.ProductInfo">
+        select id,name,specification,cust_id as custId from product_info where cust_id = #{custId}
+    </select>
+
+    <select id="selectByName" resultType="com.enn.vo.energy.system.ProductInfo">
+        select id,name,specification,cust_id as custId from product_info where cust_id=#{custId} and name=#{name}
+    </select>
+    <insert id="insertProductInfo"  parameterType="com.enn.vo.energy.system.ProductInfo" useGeneratedKeys="true" keyProperty="id" >
+           insert into product_info(name,specification,cust_id)
+        values(#{name},#{specification}, #{custId})
+    </insert>
+
+    <update id="updateProductInfoById" parameterType="com.enn.vo.energy.system.ProductInfo">
+        update product_info set name=#{name},
+        specification=#{specification},
+        cust_id=#{custId}
+        where id = #{id}
+    </update>
+
+    <delete id="deleteProductInfo">
+        delete from product_info where id=#{id}
+    </delete>
+
+    <select id="selectById" resultType="com.enn.vo.energy.system.ProductInfo">
+        select id,name,specification,cust_id as custId from product_info where id=#{id} and name=#{name}
+    </select>
+</mapper>

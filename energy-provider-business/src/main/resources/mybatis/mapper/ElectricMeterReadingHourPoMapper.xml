@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.enn.energy.business.dao.ElectricMeterReadingHourPoMapper" >
+  <resultMap id="BaseResultMap" type="com.enn.vo.energy.business.po.ElectricMeterReadingHourPo" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="meter_no" property="meterNo" jdbcType="VARCHAR" />
+    <result column="metric" property="metric" jdbcType="VARCHAR" />
+    <result column="read_time" property="readTime" jdbcType="VARCHAR" />
+    <result column="use_quantity" property="useQuantity" jdbcType="DECIMAL" />
+    <result column="fees" property="fees" jdbcType="DECIMAL" />
+  </resultMap>
+  
+  <resultMap id="CountResultMap" type="com.enn.vo.energy.business.bo.ElectricMeterReadingHourStatisticsBo">
+  	<result  column="totalElectricPower" property="totalElectricPower" jdbcType="DECIMAL"/>
+  	<result  column="totalElectricFees" property="totalElectricFees" jdbcType="DECIMAL"/>
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, meter_no, metric, read_time, use_quantity, fees
+  </sql>
+  
+  <sql id="where_readinghour_query_condition">
+  	<where>
+  		<if test="equipID !=null">
+  			and meter_no in 
+  			<foreach collection="equipID" index="index" item="item" open="(" separator="," close=")">
+                #{item}       
+        	</foreach> 
+  		</if>
+  		<if test="start !=null and end !=null">
+  			and read_time between #{start} and #{end}
+  		</if>
+     </where>
+  </sql>
+  
+  <select id="queryElectricMeterReadingHourByAssignedConditon" resultMap="BaseResultMap" parameterType="com.enn.vo.energy.business.condition.ElectricMeterReadingHourCondition">
+  		select * from electric_meter_reading_hour 
+		<include refid="where_readinghour_query_condition" />
+		order by id asc 
+  </select>
+  
+  <sql id="where_readinghour_count_condition">
+  	<where>
+  		<if test="equipID !=null">
+  			and meter_no in 
+  			<foreach collection="equipID" index="index" item="item" open="(" separator="," close=")">
+                #{item}       
+        	</foreach> 
+  		</if>
+  		<if test="start !=null and end !=null">
+  			and read_time between #{start} and #{end}
+  		</if>
+     </where>
+  </sql>
+  
+  <select id="countElectricMeterReadingHourByAssignedConditon" resultMap="CountResultMap" parameterType="com.enn.vo.energy.business.condition.ElectricMeterReadingHourCondition">
+  		select sum(use_quantity) as totalElectricPower,sum(fees) as totalElectricFees from electric_meter_reading_hour 
+		<include refid="where_readinghour_count_condition" />
+  </select>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from electric_meter_reading_hour
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from electric_meter_reading_hour
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.enn.vo.energy.business.po.ElectricMeterReadingHourPo" useGeneratedKeys="true" keyProperty="id" >
+    insert into electric_meter_reading_hour (meter_no, metric, read_time, 
+      use_quantity, fees)
+    values (#{meterNo,jdbcType=VARCHAR}, #{metric,jdbcType=VARCHAR}, #{readTime,jdbcType=VARCHAR}, 
+      #{useQuantity,jdbcType=DECIMAL}, #{fees,jdbcType=DECIMAL})
+  </insert>
+  <insert id="insertSelective" parameterType="com.enn.vo.energy.business.po.ElectricMeterReadingHourPo" useGeneratedKeys="true" keyProperty="id" >
+    insert into electric_meter_reading_hour
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="meterNo != null" >
+        meter_no,
+      </if>
+      <if test="metric != null" >
+        metric,
+      </if>
+      <if test="readTime != null" >
+        read_time,
+      </if>
+      <if test="useQuantity != null" >
+        use_quantity,
+      </if>
+      <if test="fees != null" >
+        fees,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="meterNo != null" >
+        #{meterNo,jdbcType=VARCHAR},
+      </if>
+      <if test="metric != null" >
+        #{metric,jdbcType=VARCHAR},
+      </if>
+      <if test="readTime != null" >
+        #{readTime,jdbcType=VARCHAR},
+      </if>
+      <if test="useQuantity != null" >
+        #{useQuantity,jdbcType=DECIMAL},
+      </if>
+      <if test="fees != null" >
+        #{fees,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.enn.vo.energy.business.po.ElectricMeterReadingHourPo" >
+    update electric_meter_reading_hour
+    <set >
+      <if test="meterNo != null" >
+        meter_no = #{meterNo,jdbcType=VARCHAR},
+      </if>
+      <if test="metric != null" >
+        metric = #{metric,jdbcType=VARCHAR},
+      </if>
+      <if test="readTime != null" >
+        read_time = #{readTime,jdbcType=VARCHAR},
+      </if>
+      <if test="useQuantity != null" >
+        use_quantity = #{useQuantity,jdbcType=DECIMAL},
+      </if>
+      <if test="fees != null" >
+        fees = #{fees,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.enn.vo.energy.business.po.ElectricMeterReadingHourPo" >
+    update electric_meter_reading_hour
+    set meter_no = #{meterNo,jdbcType=VARCHAR},
+      metric = #{metric,jdbcType=VARCHAR},
+      read_time = #{readTime,jdbcType=VARCHAR},
+      use_quantity = #{useQuantity,jdbcType=DECIMAL},
+      fees = #{fees,jdbcType=DECIMAL}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <select id="getElecSumByMonth" resultType="com.enn.vo.energy.business.resp.StatisticsDataResp">
+    select   SUM(use_quantity) AS sumQuantity,
+    SUM(fees) AS sumFees,
+    read_time as readTime
+    from electric_meter_reading_hour
+    WHERE read_time >= #{startTime}
+    AND read_time &lt;= #{endTime}
+    AND meter_no IN
+    <foreach collection="meterNoList" index="index" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+    group by read_time
+  </select>
+</mapper>
