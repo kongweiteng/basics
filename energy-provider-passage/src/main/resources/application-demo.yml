@@ -1,0 +1,55 @@
+spring:
+  application:
+    name: energy-provider-passage
+  datasource:
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://10.39.47.243:3306/uee?characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false
+    username: uee_demo
+    password: uee_demo
+    type: com.alibaba.druid.pool.DruidDataSource
+    platform: mysql
+  redis:
+    host: 10.39.30.243
+    port: 6379
+    database: 0
+    password: FNadmin1234
+    timeout: 4000
+    pool:
+      max-active: 300
+      min-idle: 10
+      max-idle: 100
+      max-wait: 6000
+      test-on-create: false
+      test-on-borrow: true
+      test-on-return: false
+      test-while-idle: true
+
+
+eureka:
+  client: # 客户端进行Eureka注册的配置
+    service-url:
+      defaultZone: http://eureka-server-fnw-tutorial.topaas.enncloud.cn/eureka
+  instance:
+    lease-renewal-interval-in-seconds: 2 # 设置心跳的时间间隔（默认是30秒）
+    lease-expiration-duration-in-seconds: 5 # 如果现在超过了5秒的间隔（默认是90秒）
+    instance-id: ${spring.cloud.client.ipAddress}:${server.port}
+    prefer-ip-address: true     # 访问的路径变为IP地址
+    #hostname: etsp-provider-rmi-fnw-dev.topaas.enncloud.cn
+    #non-secure-port: 80
+
+
+server:
+  port: 8089
+
+ribbon:
+  ConnectTimeout: 3000
+  ReadTimeout: 6000
+hystrix:
+  command:
+    default:
+      execution:
+        timeout:
+          enabled: true
+        isolation:
+          thread:
+            timeoutInMilliseconds: 6000

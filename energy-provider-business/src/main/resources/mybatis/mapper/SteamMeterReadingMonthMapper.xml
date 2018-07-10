@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.enn.energy.business.dao.SteamMeterReadingMonthPoMapper">
+
+    <resultMap id="BaseResultMap" type="com.enn.vo.energy.business.po.SteamMeterReadingMonthPo" >
+        <id column="id" property="id" jdbcType="BIGINT" />
+        <result column="meter_no" property="meterNo" jdbcType="VARCHAR" />
+        <result column="metric" property="metric" jdbcType="VARCHAR" />
+        <result column="read_time" property="readTime" jdbcType="VARCHAR" />
+        <result column="use_quantity" property="useQuantity" jdbcType="DECIMAL" />
+        <result column="fees" property="fees" jdbcType="DECIMAL" />
+    </resultMap>
+
+    <resultMap id="CountResultMap" type="com.enn.vo.energy.business.bo.SteamMeterReadingMonthStatisticsBo">
+        <result  column="totalSteamPower" property="totalSteamPower" jdbcType="DECIMAL"/>
+  		<result  column="totalSteamFees" property="totalSteamFees" jdbcType="DECIMAL"/>
+    </resultMap>
+
+    <sql id="where_readingmonth_query_condition">
+        <where>
+            <if test="equipID !=null">
+                and meter_no in
+                <foreach collection="equipID" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="start !=null and end !=null">
+                and read_time between #{start} and #{end}
+            </if>
+            and metric='EMS.FsIntLP'
+        </where>
+    </sql>
+
+    <select id="querySteamMeterReadingMonthByAssignedConditon" resultMap="BaseResultMap" parameterType="com.enn.vo.energy.business.condition.SteamMeterReadingMonthCondition">
+        select * from steam_meter_reading_month
+        <include refid="where_readingmonth_query_condition" />
+        order by read_time asc
+    </select>
+
+    <sql id="where_readingmonth_count_condition">
+        <where>
+            <if test="equipID !=null">
+                and meter_no in
+                <foreach collection="equipID" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="start !=null and end !=null">
+                and read_time between #{start} and #{end}
+            </if>
+            and metric='EMS.FsIntLP'
+        </where>
+    </sql>
+
+    <select id="countSteamMeterReadingMonthByAssignedConditon" resultMap="CountResultMap" parameterType="com.enn.vo.energy.business.condition.SteamMeterReadingMonthCondition">
+        select sum(use_quantity) as totalSteamPower,sum(fees) as totalSteamFees from steam_meter_reading_month
+        <include refid="where_readingmonth_count_condition" />
+    </select>
+
+    <select id="querySteamMonthGroup" resultMap="BaseResultMap">
+        select read_time,sum(use_quantity) as use_quantity,sum(quantity) as quantity,sum(fees) as fees from steam_meter_reading_month
+        <include refid="where_readingmonth_query_condition" />
+        group by read_time
+    </select>
+
+    <select id="countSteamMeterReadingMonthByAssignedConditon" resultType="com.enn.vo.energy.business.resp.StatisticsDataResp" parameterType="com.enn.vo.energy.business.condition.SteamMeterReadingMonthCondition">
+    select sum(use_quantity) as sumQuantity,sum(fees) as sumFees,read_time as readTime from steam_meter_reading_month
+        WHERE read_time >= #{startTime}
+        AND read_time &lt;= #{endTime}
+        AND meter_no IN
+        <foreach collection="equipID" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        group by read_time
+  </select>
+
+    <!-- 根据表获取month data total-->
+    <select id="steamMonthTotal" resultType="com.enn.vo.energy.business.vo.BoardMonthVo">
+        SELECT
+            IFNULL(SUM(t1.fees),0) AS fees,
+            IFNULL(SUM(t1.use_quantity),0) AS useQuantity,
+            IFNULL(SUM(t1.last_month_percent),0) as percent
+        FROM
+          steam_meter_reading_month t1
+        WHERE
+          t1.meter_no IN
+        <foreach collection="loopNumbers" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        AND
+        <if test="dateFlag == 1">
+            t1.read_time = DATE_FORMAT( DATE_SUB( curdate( ), INTERVAL 2 MONTH ), '%Y-%m' )
+        </if>
+        <if test="dateFlag == 0">
+            t1.read_time = DATE_FORMAT( DATE_SUB( curdate( ), INTERVAL 1 MONTH ), '%Y-%m' )
+        </if>
+        AND t1.metric = 'EMS.FsIntLP'
+    </select>
+
+    <!-- 根据表获取month data-->
+    <select id="steamMonthData" resultType="com.enn.vo.energy.business.vo.BoardMonthVo">
+        SELECT
+            t1.fees AS fees,
+            t1.use_quantity AS useQuantity,
+            t1.last_month_percent as percent,
+            t1.meter_no AS meterNo,
+            t3.`name` AS unitName
+        FROM
+            steam_meter_reading_month t1
+        LEFT JOIN cust_meter t2 ON t1.meter_no = t2.loop_number
+        LEFT JOIN accounting_unit t3 ON t2.accounting_id = t3.id
+        WHERE
+          t1.meter_no IN
+            <foreach collection="loopNumbers" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            AND t1.read_time = DATE_FORMAT( DATE_SUB( curdate( ), INTERVAL 1 MONTH ), '%Y-%m' )
+          AND t1.metric = 'EMS.FsIntLP'
+        ORDER BY t1.use_quantity DESC
+    </select>
+
+    <!-- 获取车间表用汽月数据 -->
+    <select id="steamMonthTotalByWorkShop" resultType="com.enn.vo.energy.business.vo.BoardMonthVo">
+        SELECT
+            IFNULL(SUM( t1.fees ),0) AS fees,
+            IFNULL(SUM( t1.use_quantity ),0) AS useQuantity,
+            IFNULL(SUM( t1.last_month_percent ),0) AS percent
+        FROM
+            steam_meter_reading_month t1
+        LEFT JOIN
+            cust_meter t2
+        ON
+            t2.loop_number = t1.meter_no
+        LEFT JOIN
+            accounting_unit t3
+	    ON
+	        t2.accounting_id = t3.id
+        WHERE
+            t3.id = #{workShopId}
+        AND t1.metric = 'EMS.FsIntLP'
+        AND
+        <if test="dateFlag == 1">
+            t1.read_time = DATE_FORMAT( DATE_SUB( curdate( ), INTERVAL 2 MONTH ), '%Y-%m' )
+        </if>
+        <if test="dateFlag == 0">
+            t1.read_time = DATE_FORMAT( DATE_SUB( curdate( ), INTERVAL 1 MONTH ), '%Y-%m' )
+        </if>
+    </select>
+
+    <select id="monthTotalVo" resultType="com.enn.vo.energy.business.vo.BoardMonthVo">
+        SELECT
+            t1.fees,
+            t1.use_quantity AS useQuantity
+        FROM
+            steam_meter_reading_month t1
+        WHERE
+            t1.meter_no = #{loopNumber}
+	    AND
+        <if test="dateFlag == 1">
+            t1.read_time = DATE_FORMAT( DATE_SUB( curdate( ), INTERVAL 2 MONTH ), '%Y-%m' )
+        </if>
+        <if test="dateFlag == 0">
+            t1.read_time = DATE_FORMAT( DATE_SUB( curdate( ), INTERVAL 1 MONTH ), '%Y-%m' )
+        </if>
+        AND t1.metric = 'EMS.FsIntLP'
+    </select>
+</mapper>

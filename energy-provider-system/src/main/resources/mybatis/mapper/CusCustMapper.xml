@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.enn.energy.system.dao.CusCustMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.enn.vo.energy.system.CusCust">
+        <id column="id" property="id"/>
+        <result column="agent_id" property="agentId"/>
+        <result column="c_cons" property="cCons"/>
+        <result column="cus_no" property="cusNo"/>
+        <result column="name" property="name"/>
+        <result column="short_name" property="shortName"/>
+        <result column="area_id" property="areaId"/>
+        <result column="province_code" property="provinceCode"/>
+        <result column="office_id" property="officeId"/>
+        <result column="is_master" property="isMaster"/>
+        <result column="city_code" property="cityCode"/>
+        <result column="district_code" property="districtCode"/>
+        <result column="address" property="address"/>
+        <result column="legal_person" property="legalPerson"/>
+        <result column="bus_scope" property="busScope"/>
+        <result column="status" property="status"/>
+        <result column="contract_status" property="contractStatus"/>
+        <result column="industry" property="industry"/>
+        <result column="register_no" property="registerNo"/>
+        <result column="reg_capital" property="regCapital"/>
+        <result column="contact_person" property="contactPerson"/>
+        <result column="telephone" property="telephone"/>
+        <result column="fax" property="fax"/>
+        <result column="bus_type" property="busType"/>
+        <result column="bus_scale" property="busScale"/>
+        <result column="bus_detail" property="busDetail"/>
+        <result column="bus_property" property="busProperty"/>
+        <result column="bus_licence" property="busLicence"/>
+        <result column="material" property="material"/>
+        <result column="prodect" property="prodect"/>
+        <result column="pur_channel" property="purChannel"/>
+        <result column="sale_channel" property="saleChannel"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_date" property="createDate"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_date" property="updateDate"/>
+        <result column="remarks" property="remarks"/>
+        <result column="del_flag" property="delFlag"/>
+        <result column="is_monitor" property="isMonitor"/>
+        <result column="agent_contract_id" property="agentContractId"/>
+        <result column="credit_no" property="creditNo"/>
+        <result column="power_wiring_diagram" property="powerWiringDiagram"/>
+    </resultMap>
+
+    <select id="getAll" resultMap="BaseResultMap">
+        select * from  cus_cust where del_flag='0'
+    </select>
+
+
+</mapper>

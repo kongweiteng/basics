@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.enn.energy.passage.dao.SteamLadderPriceMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="RespResultMap" type="com.enn.vo.energy.system.SteamLadderPrice">
+        <id column="id" property="id"/>
+        <result column="steam_id" property="steamId"/>
+        <result column="start_value" property="startValue"/>
+        <result column="end_value" property="endValue"/>
+        <result column="steam_price" property="steamPrice"/>
+    </resultMap>
+    <select id="findSteamLadderPriceBySteamInfoId" resultMap="RespResultMap">
+        SELECT
+        s.id,s.steam_id,s.start_value,s.end_value,s.steam_price
+        FROM
+        steam_ladder_price s
+        WHERE steam_id=#{id}
+        and
+        start_value &lt;= #{dosage}
+        and
+        end_value > #{dosage}
+    </select>
+
+    <!-- 根据企业阶梯标准id获取阶梯价格 -->
+    <select id="steamLadderPrices" resultType="com.enn.vo.energy.passage.vo.SteamLadderPriceVo">
+        SELECT
+            t1.id,
+            t1.steam_id AS steamId,
+            t1.start_value AS startValue,
+            t1.end_value AS endValue,
+            t1.steam_price AS steamPrice
+        FROM
+            steam_ladder_price t1
+        WHERE
+            t1.steam_id = #{steamId}
+            AND t1.del_flag = 0;
+    </select>
+</mapper>

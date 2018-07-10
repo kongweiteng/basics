@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.enn.energy.business.dao.SteamMeterReadingDayPoMapper" >
+  <resultMap id="BaseResultMap" type="com.enn.vo.energy.business.po.SteamMeterReadingDayPo" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="meter_no" property="meterNo" jdbcType="VARCHAR" />
+    <result column="metric" property="metric" jdbcType="VARCHAR" />
+    <result column="read_time" property="readTime" jdbcType="DATE" />
+    <result column="use_quantity" property="useQuantity" jdbcType="DECIMAL" />
+    <result column="quantity" property="quantity" jdbcType="DECIMAL" />
+    <result column="fees" property="fees" jdbcType="DECIMAL" />
+    </resultMap>
+
+    <resultMap id="CountResultMap" type="com.enn.vo.energy.business.bo.SteamMeterReadingDayStatisticsBo">
+        <result  column="totalSteamPower" property="totalSteamPower" jdbcType="DECIMAL"/>
+  		<result  column="totalSteamFees" property="totalSteamFees" jdbcType="DECIMAL"/>
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+    id, meter_no, metric, read_time, use_quantity, quantity, fees
+  </sql>
+
+    <sql id="where_readingDay_query_condition">
+        <where>
+            <if test="equipID !=null">
+                and meter_no in
+                <foreach collection="equipID" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="start !=null and end !=null">
+                and read_time between #{start} and #{end}
+            </if>
+        </where>
+    </sql>
+
+    <select id="querySteamMeterReadingDayByAssignedConditon" resultMap="BaseResultMap" parameterType="com.enn.vo.energy.business.condition.SteamMeterReadingDayCondition">
+        select * from steam_meter_reading_day
+        <include refid="where_readingDay_query_condition" />
+        and metric ='EMS.FsIntLP'
+        order by read_time asc
+    </select>
+
+    <sql id="where_readingday_count_condition">
+        <where>
+            <if test="equipID !=null">
+                and meter_no in
+                <foreach collection="equipID" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="start !=null and end !=null">
+                and read_time between #{start} and #{end}
+            </if>
+                and metric ='EMS.FsIntLP'
+        </where>
+    </sql>
+
+    <select id="countSteamMeterReadingDayByAssignedConditon" resultMap="CountResultMap" parameterType="com.enn.vo.energy.business.condition.SteamMeterReadingDayCondition">
+        select sum(use_quantity) as totalSteamPower,sum(fees) as totalSteamFees from steam_meter_reading_day
+        <include refid="where_readingday_count_condition" />
+    </select>
+
+    <select id="querySteamDayGroup" resultMap="BaseResultMap">
+        select read_time,sum(use_quantity) as use_quantity,sum(quantity) as quantity,sum(fees) as fees from steam_meter_reading_day
+        <include refid="where_readingDay_query_condition" />
+        and metric ='EMS.FsIntLP'
+        group by read_time
+    </select>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+        select
+        <include refid="Base_Column_List" />
+        from steam_meter_reading_day
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from steam_meter_reading_day
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.enn.vo.energy.business.po.SteamMeterReadingDayPo" useGeneratedKeys="true" keyProperty="id" >
+    insert into steam_meter_reading_day (meter_no, metric, read_time, 
+      use_quantity, quantity, fees
+      )
+    values (#{meterNo,jdbcType=VARCHAR}, #{metric,jdbcType=VARCHAR}, #{readTime,jdbcType=DATE}, 
+      #{useQuantity,jdbcType=DECIMAL}, #{quantity,jdbcType=DECIMAL}, #{fees,jdbcType=DECIMAL}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.enn.vo.energy.business.po.SteamMeterReadingDayPo" useGeneratedKeys="true" keyProperty="id" >
+    insert into steam_meter_reading_day
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="meterNo != null" >
+        meter_no,
+      </if>
+      <if test="metric != null" >
+        metric,
+      </if>
+      <if test="readTime != null" >
+        read_time,
+      </if>
+      <if test="useQuantity != null" >
+        use_quantity,
+      </if>
+      <if test="quantity != null" >
+        quantity,
+      </if>
+      <if test="fees != null" >
+        fees,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="meterNo != null" >
+        #{meterNo,jdbcType=VARCHAR},
+      </if>
+      <if test="metric != null" >
+        #{metric,jdbcType=VARCHAR},
+      </if>
+      <if test="readTime != null" >
+        #{readTime,jdbcType=DATE},
+      </if>
+      <if test="useQuantity != null" >
+        #{useQuantity,jdbcType=DECIMAL},
+      </if>
+      <if test="quantity != null" >
+        #{quantity,jdbcType=DECIMAL},
+      </if>
+      <if test="fees != null" >
+        #{fees,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.enn.vo.energy.business.po.SteamMeterReadingDayPo" >
+    update steam_meter_reading_day
+    <set >
+      <if test="meterNo != null" >
+        meter_no = #{meterNo,jdbcType=VARCHAR},
+      </if>
+      <if test="metric != null" >
+        metric = #{metric,jdbcType=VARCHAR},
+      </if>
+      <if test="readTime != null" >
+        read_time = #{readTime,jdbcType=DATE},
+      </if>
+      <if test="useQuantity != null" >
+        use_quantity = #{useQuantity,jdbcType=DECIMAL},
+      </if>
+      <if test="quantity != null" >
+        quantity = #{quantity,jdbcType=DECIMAL},
+      </if>
+      <if test="fees != null" >
+        fees = #{fees,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.enn.vo.energy.business.po.SteamMeterReadingDayPo" >
+    update steam_meter_reading_day
+    set meter_no = #{meterNo,jdbcType=VARCHAR},
+      metric = #{metric,jdbcType=VARCHAR},
+      read_time = #{readTime,jdbcType=DATE},
+      use_quantity = #{useQuantity,jdbcType=DECIMAL},
+      quantity = #{quantity,jdbcType=DECIMAL},
+      fees = #{fees,jdbcType=DECIMAL}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+    <select id="getSteamByDay" parameterType="com.enn.vo.energy.business.condition.SteamMeterReadingDayCondition" resultType="com.enn.vo.energy.business.resp.StatisticsDataResp">
+        select sum(use_quantity) as sumQuantity,sum(fees) as sumFees,read_time as readTime from steam_meter_reading_day
+        WHERE read_time >= #{startTime}
+        AND read_time &lt;= #{endTime}
+        AND meter_no IN
+        <foreach collection="equipID" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        group by read_time
+    </select>
+
+
+    <!-- 根据 表号、时间  查询能源用量和  用费和 -->
+    <select id="getYesterdayBoardUnit" resultType="com.enn.vo.energy.business.resp.YesterdayBoardUnitResp">
+        select sum(use_quantity) as useQuantity,sum(fees) as fees
+        from steam_meter_reading_day
+          where read_time = #{time}
+        AND meter_no IN
+        <foreach collection="meters" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and metric='EMS.FsIntLP'
+    </select>
+
+    <!-- 车间用汽-天-查询 -->
+    <select id="getSteamMeterForDay" resultType="com.enn.vo.energy.business.resp.SteamMeterReadingResp">
+        SELECT
+            ROUND(IFNULL(SUM(t1.use_quantity),0), 2) AS useQuantity,
+            DATE_FORMAT( t1.read_time, '%Y-%m-%d' ) AS readTime,
+            ROUND(IFNULL(SUM(t1.fees),0),2) AS fees
+        FROM
+          steam_meter_reading_day t1
+        WHERE
+          t1.meter_no IN (
+            <include refid="loopNumberSql"/>
+          )
+        AND
+          DATE_FORMAT(t1.read_time,'%Y-%m-%d') between DATE_FORMAT(#{startTime},'%Y-%m-%d') AND DATE_FORMAT(#{endTime},'%Y-%m-%d')
+        AND t1.metric = 'EMS.FsIntLP'
+        GROUP BY
+          t1.read_time
+    </select>
+
+    <sql id="querySqlForYear">
+        WHERE
+          t1.meter_no IN (
+          <include refid="loopNumberSql"/>
+         )
+        AND
+        t1.read_time between #{startTime} AND #{endTime}
+        AND t1.metric = 'EMS.FsIntLP'
+        GROUP BY
+        t1.read_time
+    </sql>
+
+    <!-- 获取表 -->
+    <sql id="loopNumberSql">
+        SELECT loop_number FROM cust_meter WHERE accounting_id IN
+        (
+        <choose>
+            <when test="exist == 1">
+                #{unitId}
+            </when>
+            <otherwise>
+                <include refid="unitIdsSql"/>
+            </otherwise>
+        </choose>
+        )
+        AND energy_type = '02'
+        AND is_accoun = '1'
+    </sql>
+
+    <!-- 车间不存在表获取生产线 -->
+    <sql id="unitIdsSql">
+        SELECT
+            id
+        FROM
+            accounting_unit
+        WHERE
+            accounting_type = '03'
+        AND parent_id = #{unitId}
+        AND is_temp = '0'
+        AND is_use = '1'
+    </sql>
+
+    <sql id="yearDataSql">
+        SELECT
+            SUM(t1.use_quantity) AS useQuantity,
+            t1.read_time AS readTime,
+            SUM(t1.fees) AS fees,
+            SUM(t1.last_month_percent) as lastMonthPercent,
+            SUM(t1.same_period_percent) as samePeriodPercent
+        FROM
+          steam_meter_reading_month t1
+        <include refid="querySqlForYear"/>
+    </sql>
+
+    <sql id="dayDataSql">
+        SELECT
+            SUM( t1.use_quantity ) AS useQuantity,
+            DATE_FORMAT(t1.read_time,'%Y-%m') AS readTime,
+            SUM( t1.fees ) AS fees,
+            null AS lastMonthPercent,
+            null AS samePeriodPercent
+        FROM
+            steam_meter_reading_day t1
+        WHERE
+            t1.read_time
+        BETWEEN
+            DATE_ADD( curdate( ), INTERVAL - DAY ( curdate( ) ) + 1 DAY )
+        AND
+            date_sub( curdate( ), INTERVAL 1 DAY )
+        AND
+          t1.meter_no IN (
+              <include refid="loopNumberSql"/>
+            )
+        AND t1.metric = 'EMS.FsIntLP'
+    </sql>
+
+    <!-- 车间用汽-年-查询 -->
+    <select id="getSteamMeterForYear" resultType="com.enn.vo.energy.business.resp.SteamMeterReadingResp">
+        SELECT
+            ROUND(IFNULL(useQuantity, 0),2) AS useQuantity,
+            readTime,
+            ROUND(IFNULL(fees,0),2) AS fees
+        FROM
+        (
+        <choose>
+            <when test="flag == 1">
+                <include refid="dayDataSql"/>
+                UNION
+                <include refid="yearDataSql"/>
+            </when>
+
+            <otherwise>
+                <include refid="yearDataSql"/>
+            </otherwise>
+        </choose>
+        ) temp
+        ORDER BY readTime
+    </select>
+
+    <!-- 车间用汽详情-年-查询 -->
+    <select id="getSteamMeterDetailForYear" resultType="com.enn.vo.energy.business.resp.SteamMeterReadingDetailResp">
+        SELECT
+            ROUND(IFNULL(useQuantity,0),2) AS useQuantity,
+            readTime,
+            ROUND(IFNULL(fees,0),2) AS  fees,
+            ROUND(IFNULL(lastMonthPercent*100,0),2) AS lastMonthPercent,
+            ROUND(IFNULL(samePeriodPercent*100,0),2) AS samePeriodPercent
+        FROM
+        (
+        <choose>
+            <when test="flag == 1">
+                <include refid="dayDataSql"/>
+                UNION
+                <include refid="yearDataSql"/>
+            </when>
+
+            <otherwise>
+                <include refid="yearDataSql"/>
+            </otherwise>
+        </choose>
+        ) temp
+        ORDER BY readTime
+    </select>
+
+    <!-- 月-天-用汽量-->
+    <select id="boderSteamCurve" resultType="com.enn.vo.energy.business.resp.SteamMeterReadingResp">
+        SELECT
+            SUM( t1.fees ) AS fees,
+            ROUND(IFNULL(SUM( t1.use_quantity ),0),2) AS useQuantity,
+            t1.read_time AS readTime
+        FROM
+            steam_meter_reading_day t1
+        WHERE
+            t1.read_time BETWEEN concat( date_format( LAST_DAY( now( ) - INTERVAL 1 MONTH ), '%Y-%m-' ), '01' )
+            AND LAST_DAY( now( ) - INTERVAL 1 MONTH )
+            AND t1.meter_no = #{loopNumber}
+            AND t1.metric = 'EMS.FsIntLP'
+        GROUP BY
+            t1.read_time
+        ORDER BY
+            t1.read_time
+    </select>
+
+</mapper>

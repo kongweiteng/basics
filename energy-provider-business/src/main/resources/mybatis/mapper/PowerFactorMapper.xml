@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.enn.energy.business.dao.PowerFactorMapper">
+	<select id="findPowerFactorByDay" resultType="BigDecimal">
+		select sum(power_factor) from electric_meter_power_factor_day
+		WHERE read_time >= #{startTime}
+        AND read_time &lt; #{endTime}
+		AND meter_no in
+		<foreach item="item" index="index" collection="meterNoList" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+
+	<select id="findPowerFactorByHour" resultType="BigDecimal">
+			select sum(power_factor) from electric_meter_power_factor_hour
+			WHERE read_time >= #{startTime}
+			AND read_time &lt; #{endTime}
+			AND meter_no in
+			<foreach item="item" index="index" collection="meterNoList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	</select>
+</mapper>
