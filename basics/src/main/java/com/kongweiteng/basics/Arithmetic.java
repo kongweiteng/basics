@@ -10,7 +10,7 @@ public class Arithmetic {
 
     public static void main(String[] args) {
 
-        int[] unms = {0, 1, 2, 3, 4, 5, 6, 7, 8};
+        int[] unms = {-1, 0, 1, 2, -1, -4};
 
         /**
          * 实现三位数的排列组合，随机组合但是不能有重复
@@ -24,9 +24,11 @@ public class Arithmetic {
     }
 
     public static void g(int[] unms, int i, int j, int k) {
-        int[] a = {unms[i], unms[j], unms[k]};
+        if (unms[i] + unms[j] + unms[k] == 0) {
+            System.err.println(unms[i] + "," + unms[j] + "," + unms[k]);
+        }
         //result.add(Arrays.asList(i,j,k));
-        System.err.println(unms[i] + "," + unms[j] + "," + unms[k]);
+
         if (k < unms.length - 1) {
             k++;
             g(unms, i, j, k);
