@@ -15,41 +15,47 @@ public class Arithmetic {
         /**
          * 实现三位数的排列组合，随机组合但是不能有重复
          */
-        int n = unms.length;
 
-        g(unms, 0, 1, 2);
-        //System.out.println(result);
+        List<List> g = g(unms, 0, 1, 2, new ArrayList<List>());
+        System.out.println(g);
 
 
     }
 
-    public static void g(int[] unms, int i, int j, int k) {
+    public static List<List> g(int[] unms, int i, int j, int k, List<List> list) {
         if (unms[i] + unms[j] + unms[k] == 0) {
-            System.err.println(unms[i] + "," + unms[j] + "," + unms[k]);
+            List<Integer> integers = Arrays.asList(unms[i], unms[j], unms[k]);
+            integers.sort((x, y) -> {
+                if (x > y) {
+                    return 1;
+                } else {
+                    return -1;
+                }
+            });
+            if (!list.contains(integers)) {
+                list.add(integers);
+            }
         }
-        //result.add(Arrays.asList(i,j,k));
 
         if (k < unms.length - 1) {
             k++;
-            g(unms, i, j, k);
-            return;
+
+            return g(unms, i, j, k, list);
         } else {
             k = j + 2;
         }
         if (j < unms.length - 2) {
             j++;
-            g(unms, i, j, k);
-            return;
+            return g(unms, i, j, k, list);
         } else {
             k = i + 3;
             j = i + 2;
         }
-
         if (i < unms.length - 3) {
             i++;
-            g(unms, i, j, k);
-            return;
+            return g(unms, i, j, k, list);
         }
+        return list;
     }
 
 }
