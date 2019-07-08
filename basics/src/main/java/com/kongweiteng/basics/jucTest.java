@@ -1,12 +1,40 @@
 package com.kongweiteng.basics;
 
+
 public class jucTest {
 
+    /**
+     * 发送短信同步方法，并且调用发送邮件的方法
+     *//*
+    private static synchronized void sendSMS() {
+        System.err.println(Thread.currentThread().getName() + " sendSMS");
+        //在发送短信的方法中调用发送邮件的同步方法
+        sendEmil();
+    }
+
+    *//**
+     * 发送邮件同步方法
+     *//*
+    private static synchronized void sendEmil() {
+        System.err.println(Thread.currentThread().getName() + " sendEmil");
+    }
+
+    */
+
+    /**
+     * 两个线程调用发送信息
+     *//*
+    public static void test() {
+        new Thread(() -> {
+            sendSMS();
+        }, "t1").start();
+        new Thread(() -> {
+            sendSMS();
+        }, "t2").start();
+    }
+*/
     public static void main(String[] args) {
-
-
-
-
+//        test();
 
 //        CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<>();
 //        List<String> list = Collections.synchronizedList(new ArrayList<>());
@@ -35,9 +63,6 @@ public class jucTest {
 //
 //        }
     }
-
-
-
 
 
 }
