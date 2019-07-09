@@ -14,9 +14,11 @@ public class CountDownLatchDemo {
         for (int i = 1; i <= 6; i++) {
             new Thread(() -> {
                 System.err.println(Thread.currentThread().getName());
+                System.err.println(countDownLatch.getCount());
                 countDownLatch.countDown();
             }, CountEnum.forEach(i).getReMessage()).start();
         }
+
         //等待线程数减到0的时候才会走下一步
         countDownLatch.await();
         System.err.println(Thread.currentThread().getName() + "main");
