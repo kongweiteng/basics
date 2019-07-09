@@ -1,4 +1,4 @@
-package com.kongweiteng.basics;
+package com.kongweiteng.basics.juc;
 
 
 import java.util.concurrent.locks.Lock;
