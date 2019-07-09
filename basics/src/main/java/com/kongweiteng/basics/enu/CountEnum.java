@@ -4,12 +4,12 @@ package com.kongweiteng.basics.enu;
 import java.util.Arrays;
 
 public enum CountEnum {
-    one(1, " qi"),
-    two(2, " chu"),
-    t(3, " yan"),
-    f(4, " zhao"),
-    g(5, " han"),
-    e(6, " wei");
+    qi(1, " qi"),
+    chu(2, " chu"),
+    yan(3, " yan"),
+    zhao(4, " zhao"),
+    han(5, " han"),
+    wei(6, " wei");
 
 
     private Integer retCode;
