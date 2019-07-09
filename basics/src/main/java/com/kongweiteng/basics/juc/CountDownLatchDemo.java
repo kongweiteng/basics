@@ -21,6 +21,6 @@ public class CountDownLatchDemo {
 
         //等待线程数减到0的时候才会走下一步
         countDownLatch.await();
-        System.err.println(Thread.currentThread().getName() + "main");
+        System.err.println(Thread.currentThread().getName() + "  main");
     }
 }
